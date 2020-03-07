@@ -25,7 +25,7 @@ public class TwitterFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         twitterViewModel =
                 ViewModelProviders.of(this).get(TwitterViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View root = inflater.inflate(R.layout.fragment_supplies, container, false);
         final TextView textView = root.findViewById(R.id.text_notifications);
         twitterViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
