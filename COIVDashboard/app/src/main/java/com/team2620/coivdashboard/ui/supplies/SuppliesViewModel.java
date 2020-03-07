@@ -1,16 +1,16 @@
-package com.team2620.coivdashboard.ui.home;
+package com.team2620.coivdashboard.ui.supplies;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HomeViewModel extends ViewModel {
+public class SuppliesViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public HomeViewModel() {
+    public SuppliesViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mText.setValue("This is supplies fragment");
     }
 
     public LiveData<String> getText() {

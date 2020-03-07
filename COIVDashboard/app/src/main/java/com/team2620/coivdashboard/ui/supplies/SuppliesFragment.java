@@ -1,4 +1,4 @@
-package com.team2620.coivdashboard.ui.home;
+package com.team2620.coivdashboard.ui.supplies;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.team2620.coivdashboard.R;
 
-public class HomeFragment extends Fragment {
+public class SuppliesFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
+    private SuppliesViewModel notificationsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        notificationsViewModel =
+                ViewModelProviders.of(this).get(SuppliesViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_supplies, container, false);
+        final TextView textView = root.findViewById(R.id.text_notifications);
+        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
