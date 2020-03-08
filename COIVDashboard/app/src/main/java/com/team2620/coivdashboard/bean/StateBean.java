@@ -1,12 +1,12 @@
 package com.team2620.coivdashboard.bean;
 
-public class CountryBean{
+public class StateBean {
 
     /**
-     * _id : Bahrain
-     * totalConfirmed : 60
+     * _id : Tibet
+     * totalConfirmed : 1
      * totalDeaths : 0
-     * totalRecovered : 4
+     * totalRecovered : 1
      */
 
     private String _id;
