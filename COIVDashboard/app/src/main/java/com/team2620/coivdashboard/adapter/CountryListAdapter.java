@@ -107,6 +107,11 @@ public class CountryListAdapter extends BaseExpandableListAdapter {
             holder.totalConfirmed.setText(stateBean.getTotalConfirmed() + "");
             holder.totalDeath.setText(stateBean.getTotalDeaths() + "");
             holder.totalRecovered.setText(stateBean.getTotalRecovered() + "");
+        } else  {holder.totalConfirmed.setText(stateBean.getTotalConfirmed() + "");
+            holder.stateName.setText("");
+            holder.totalConfirmed.setText(stateBean.getTotalConfirmed() + "");
+            holder.totalDeath.setText(stateBean.getTotalDeaths() + "");
+            holder.totalRecovered.setText(stateBean.getTotalRecovered() + "");
         }
         return view;
     }
