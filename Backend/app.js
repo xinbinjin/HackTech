@@ -218,7 +218,7 @@ app.get("/api/tweet_emotion_analysis", (req, res, next) => {
     }
 });
 
-app.get("/api/five_tweet", (req, res, next) => {
+app.get("/api/three_tweet", (req, res, next) => {
     var city = req.query.city
     if (city == "losangeles"){
         let rawdata = fs.readFileSync('los_angeles_tweets.json');
@@ -227,7 +227,17 @@ app.get("/api/five_tweet", (req, res, next) => {
     }else{
         let rawdata = fs.readFileSync('newyork_tweets.json');
         let result = JSON.parse(rawdata);
-        res.json(result.slice(0,5))
+        for(var i = 0; i < 1;i++){
+            var id = result[i]['id'];
+            var url = 'https://publish.twitter.com/oembed?url=https://twitter.com/Interior/status/' + id;
+            request(url, function(error, responde, body) {
+                if (!error && responde.statusCode == 200) {
+                    body = JSON.parse(body);
+                    res.json(body);
+                }
+            });
+        }
+        // res.json(result.slice(0,5))
     }
 });
 
