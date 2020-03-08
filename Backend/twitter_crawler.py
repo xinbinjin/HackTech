@@ -4,7 +4,7 @@ import json
 
 try:
     tso = TwitterSearchOrder()
-    tso.set_keywords(['coronavirus', 'New York'])
+    tso.set_keywords(['coronavirus', 'Los Angeles'])
     los_angeles_results = []
     count = 0
 
@@ -29,7 +29,7 @@ try:
         tweet_dict['date'] = tweet['created_at']
         los_angeles_results.append(tweet_dict)
         print (count)
-        if count == 10000:
+        if count == 3:
             break
     los_angeles_result_json = json.dumps(los_angeles_results)
     f = open("los_angeles_tweets.txt", "w")
