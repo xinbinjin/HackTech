@@ -1,5 +1,6 @@
 package com.team2620.coivdashboard;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                Intent intent = new Intent(MainActivity.this, SearchableActivity.class);
+                intent.putExtra("cityName", s);
+                startActivity(intent);
                 return false;
             }
 

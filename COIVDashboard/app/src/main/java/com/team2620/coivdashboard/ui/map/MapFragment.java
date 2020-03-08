@@ -69,6 +69,7 @@ public class MapFragment extends Fragment {
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(new LatLng(location.getLatitude(),location.getLongitude()));
                 googleMap.addMarker(markerOptions);
+
                 CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
                 googleMap.moveCamera(center);
