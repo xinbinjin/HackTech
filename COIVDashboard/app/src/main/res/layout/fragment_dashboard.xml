@@ -157,6 +157,8 @@
 
             <ExpandableListView
                 android:layout_width="match_parent"
+                android:divider="@color/colorGrey"
+                android:dividerHeight="1dp"
                 android:layout_height="match_parent"
                 android:id="@+id/first_list">
             </ExpandableListView>

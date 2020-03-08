@@ -1,12 +1,17 @@
 package com.team2620.coivdashboard;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ActionMenuView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +61,9 @@ public class SearchableActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.current_location);
         textView.setText(cityName);
         getCountryListData(getWindow().getDecorView());
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(cityName);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     public void getLocationByCity(final View view, String city)   {
@@ -187,5 +195,13 @@ public class SearchableActivity extends AppCompatActivity {
             }
         });
         queue.add(stringRequest);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

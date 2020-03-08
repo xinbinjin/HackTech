@@ -19,20 +19,10 @@ import com.team2620.coivdashboard.R;
 public class TwitterFragment extends Fragment {
 
 
-    private TwitterViewModel twitterViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        twitterViewModel =
-                ViewModelProviders.of(this).get(TwitterViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_supplies, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        twitterViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        View root = inflater.inflate(R.layout.fragment_twitter, container, false);
         return root;
     }
 

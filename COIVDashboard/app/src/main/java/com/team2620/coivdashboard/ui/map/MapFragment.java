@@ -12,18 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,11 +31,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.team2620.coivdashboard.R;
 import com.team2620.coivdashboard.bean.CoronaDataBean;
-import com.team2620.coivdashboard.bean.NearestLocationBean;
 
 import java.util.List;
 
@@ -83,21 +74,6 @@ public class MapFragment extends Fragment {
             Log.i("TAG", "经度" + location.getLongitude() + "纬度" + location.getLatitude());
         }
         mapFragment = SupportMapFragment.newInstance();
-//        mapFragment.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(GoogleMap googleMap) {
-//
-//
-//                CircleOptions circleOptions = new CircleOptions();
-//                circleOptions.center(new LatLng(location.getLatitude(),location.getLongitude()));
-//                circleOptions.radius(5000);
-//                circleOptions.strokeWidth(0);
-//                circleOptions.fillColor(0x5500ff00);
-//                googleMap.addCircle(circleOptions);
-//
-//
-//            }
-//        });
         getRawData(view, location);
         getChildFragmentManager()
                 .beginTransaction()
