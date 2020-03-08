@@ -3,6 +3,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
@@ -66,9 +68,12 @@ public class MapFragment extends Fragment {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(new LatLng(location.getLatitude(),location.getLongitude()));
-                googleMap.addMarker(markerOptions);
+                CircleOptions circleOptions = new CircleOptions();
+                circleOptions.center(new LatLng(location.getLatitude(),location.getLongitude()));
+                circleOptions.radius(5000);
+                circleOptions.strokeWidth(0);
+                circleOptions.fillColor(0x5500ff00);
+                googleMap.addCircle(circleOptions);
 
                 CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
