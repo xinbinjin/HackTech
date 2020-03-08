@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -117,6 +118,16 @@ public class DashboardFragment extends Fragment {
         //获取country数据
         getCountryListData(root);
         getNearestData(root, location);
+        CardView localCard = root.findViewById(R.id.local_card);
+        localCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                getActivity().getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.container, new MapFragment(), null)
+//                        .commit();
+            }
+        });
         return root;
     }
 
