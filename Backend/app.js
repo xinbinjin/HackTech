@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const assert = require('assert');
 const app = express();
 const querystring = require("querystring");
+const fs = require('fs');
 
 const GOOGLE_API_KEY = 'AIzaSyD3a9LPGJGo8aEE2_AS5FOPEtvb7ZD60PE';
 const EBAY_API_KEY = 'hacktech-COVIDASH-PRD-569eabc89-36681d5b';
@@ -196,6 +197,38 @@ app.get('/api/nearest_location', (req, res, next) => {
                 db.close();
         });
     });
+});
+
+app.get("/api/ebay_analysis", (req, res, next) => {
+    let rawdata = fs.readFileSync('ebay_data.json');
+    let result = JSON.parse(rawdata);
+    res.json(result)
+});
+
+app.get("/api/tweet_emotion_analysis", (req, res, next) => {
+    var city = req.query.city
+    if (city == "losangeles"){
+        let rawdata = fs.readFileSync('emotion_sum_los_angeles.json');
+        let result = JSON.parse(rawdata);
+        res.json(result)
+    }else{
+        let rawdata = fs.readFileSync('emotion_sum_newyork.json');
+        let result = JSON.parse(rawdata);
+        res.json(result)
+    }
+});
+
+app.get("/api/five_tweet", (req, res, next) => {
+    var city = req.query.city
+    if (city == "losangeles"){
+        let rawdata = fs.readFileSync('los_angeles_tweets.json');
+        let result = JSON.parse(rawdata);
+        res.json(result.slice(0,5))
+    }else{
+        let rawdata = fs.readFileSync('newyork_tweets.json');
+        let result = JSON.parse(rawdata);
+        res.json(result.slice(0,5))
+    }
 });
 
 function ebay_search_query(keyword) {
