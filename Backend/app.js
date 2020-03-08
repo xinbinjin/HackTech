@@ -187,7 +187,7 @@ app.get('/api/nearest_location', (req, res, next) => {
         //      db.close();
         // });
         var collection = dbo.collection("covid_data");
-        // collection.updateMany({}, {$rename: {'Latitude': 'coords.lat', 'Longitude': 'coords.lon'}}, false, true)
+        collection.updateMany({}, {$rename: {'Latitude': 'coords.lat', 'Longitude': 'coords.lon'}}, false, true)
         collection.ensureIndex({"coords" : "2d"});
         collection.find({
             "coords": { "$near": [lat, lng] },
@@ -215,29 +215,6 @@ app.get("/api/tweet_emotion_analysis", (req, res, next) => {
         let rawdata = fs.readFileSync('emotion_sum_newyork.json');
         let result = JSON.parse(rawdata);
         res.json(result)
-    }
-});
-
-app.get("/api/three_tweet", (req, res, next) => {
-    var city = req.query.city
-    if (city == "losangeles"){
-        let rawdata = fs.readFileSync('los_angeles_tweets.json');
-        let result = JSON.parse(rawdata);
-        res.json(result.slice(0,5))
-    }else{
-        let rawdata = fs.readFileSync('newyork_tweets.json');
-        let result = JSON.parse(rawdata);
-        for(var i = 0; i < 1;i++){
-            var id = result[i]['id'];
-            var url = 'https://publish.twitter.com/oembed?url=https://twitter.com/Interior/status/' + id;
-            request(url, function(error, responde, body) {
-                if (!error && responde.statusCode == 200) {
-                    body = JSON.parse(body);
-                    res.json(body);
-                }
-            });
-        }
-        // res.json(result.slice(0,5))
     }
 });
 
