@@ -15,12 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,7 +38,6 @@ import com.team2620.coivdashboard.adapter.CountryListAdapter;
 import com.team2620.coivdashboard.bean.CountryBean;
 import com.team2620.coivdashboard.bean.NearestLocationBean;
 import com.team2620.coivdashboard.bean.StateBean;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

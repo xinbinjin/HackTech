@@ -57,6 +57,7 @@ public class TwitterFragment extends Fragment {
     private PieChart pieChart;
     private LocationManager locationManager;
     private String locationProvider;
+    private String stateNameUrl = "http://35.236.4.22:8080/api/location2cityname?";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -83,8 +84,31 @@ public class TwitterFragment extends Fragment {
         //获取Location
         final Location location = locationManager.getLastKnownLocation(locationProvider);
 
-        getEmotionData(root, "los angeles");
+        getLocateStateName(root, location);
         return root;
+    }
+
+    public void getLocateStateName(final View view, Location location) {
+        stateNameUrl += "lat=" + location.getLatitude() + "&lng=" + location.getLongitude();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, stateNameUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        String cityName = gson.fromJson(response, String.class);
+                        if (cityName.toLowerCase().contains("los angeles")){
+                            getEmotionData(view, "losangeles");
+                        } else {
+                            getEmotionData(view, "ny");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("error", "onErrorResponse: " + error.getLocalizedMessage());
+            }
+        });
+        queue.add(stringRequest);
     }
 
     public void getEmotionData(final View view, String location) {
