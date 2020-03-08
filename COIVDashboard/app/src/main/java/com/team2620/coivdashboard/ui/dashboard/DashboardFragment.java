@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -15,16 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,11 +34,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.team2620.coivdashboard.R;
 import com.team2620.coivdashboard.adapter.CountryListAdapter;
 import com.team2620.coivdashboard.bean.CountryBean;
+import com.team2620.coivdashboard.bean.NearestLocationBean;
 import com.team2620.coivdashboard.bean.StateBean;
 
 import java.util.ArrayList;
@@ -115,7 +110,45 @@ public class DashboardFragment extends Fragment {
 
         //获取country数据
         getCountryListData(root);
+        getNearestData(root, location);
+        CardView localCard = root.findViewById(R.id.local_card);
+        localCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                getActivity().getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.container, new MapFragment(), null)
+//                        .commit();
+            }
+        });
         return root;
+    }
+
+    public void getNearestData(final View view, final Location location) {
+        String url = "http://35.236.4.22:8080/api/nearest_location?lat=" + location.getLatitude() + "&lng=" + location.getLongitude();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        NearestLocationBean nearestLocationBean = gson.fromJson(response, NearestLocationBean.class);
+                        String cityName = nearestLocationBean.get_$ProvinceState84() + ", " + nearestLocationBean.get_$CountryRegion101();
+                        TextView localCityName = view.findViewById(R.id.local_city_name);
+                        TextView confirmed = view.findViewById(R.id.local_confirmed);
+                        TextView death = view.findViewById(R.id.local_death);
+                        TextView recovered = view.findViewById(R.id.local_recovered);
+                        confirmed.setText(nearestLocationBean.getConfirmed() + "");
+                        death.setText(nearestLocationBean.getDeaths() + "");
+                        recovered.setText(nearestLocationBean.getRecovered() + "");
+                        localCityName.setText(cityName);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("error", "onErrorResponse: " + error.getLocalizedMessage());
+            }
+        });
+        queue.add(stringRequest);
     }
 
 
