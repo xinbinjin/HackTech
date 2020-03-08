@@ -44,6 +44,7 @@ import com.google.gson.reflect.TypeToken;
 import com.team2620.coivdashboard.R;
 import com.team2620.coivdashboard.adapter.CountryListAdapter;
 import com.team2620.coivdashboard.bean.CountryBean;
+import com.team2620.coivdashboard.bean.NearestLocationBean;
 import com.team2620.coivdashboard.bean.StateBean;
 
 import java.util.ArrayList;
@@ -115,7 +116,35 @@ public class DashboardFragment extends Fragment {
 
         //获取country数据
         getCountryListData(root);
+        getNearestData(root, location);
         return root;
+    }
+
+    public void getNearestData(final View view, final Location location) {
+        String url = "http://35.236.4.22:8080/api/nearest_location?lat=" + location.getLatitude() + "&lng=" + location.getLongitude();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        NearestLocationBean nearestLocationBean = gson.fromJson(response, NearestLocationBean.class);
+                        String cityName = nearestLocationBean.get_$ProvinceState84() + ", " + nearestLocationBean.get_$CountryRegion101();
+                        TextView localCityName = view.findViewById(R.id.local_city_name);
+                        TextView confirmed = view.findViewById(R.id.local_confirmed);
+                        TextView death = view.findViewById(R.id.local_death);
+                        TextView recovered = view.findViewById(R.id.local_recovered);
+                        confirmed.setText(nearestLocationBean.getConfirmed() + "");
+                        death.setText(nearestLocationBean.getDeaths() + "");
+                        recovered.setText(nearestLocationBean.getRecovered() + "");
+                        localCityName.setText(cityName);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("error", "onErrorResponse: " + error.getLocalizedMessage());
+            }
+        });
+        queue.add(stringRequest);
     }
 
 
