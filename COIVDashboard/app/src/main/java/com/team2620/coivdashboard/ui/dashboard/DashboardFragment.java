@@ -1,15 +1,26 @@
 package com.team2620.coivdashboard.ui.dashboard;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -40,6 +51,9 @@ public class DashboardFragment extends Fragment {
     private ListView firstCountryListView;
     private RequestQueue queue = null;
     private String countryDataUrl = "http://35.236.4.22:8080/api/covid_data_by_country";
+    private String stateNameUrl = "http://35.236.4.22:8080/api/location2cityname?";
+    private LocationManager locationManager;
+    private String locationProvider;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,6 +64,31 @@ public class DashboardFragment extends Fragment {
         //初始化queue
         queue = Volley.newRequestQueue(root.getContext());
 
+        //location manager
+        locationManager = (LocationManager) root.getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(root.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(root.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            root.getContext().startActivity(intent);
+        }
+        List<String> providers = locationManager.getProviders(true);
+        if (providers.contains(LocationManager.GPS_PROVIDER)) {
+            //如果是GPS
+            locationProvider = LocationManager.GPS_PROVIDER;
+        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+            //如果是Network
+            locationProvider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Toast.makeText(root.getContext(), "No Location Service Found", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        //获取Location
+        Location location = locationManager.getLastKnownLocation(locationProvider);
+        if (location != null) {
+            //不为空,显示地理位置经纬度
+            Log.i("TAG","经度"+location.getLongitude()+"纬度"+location.getLatitude());
+        }
+        getLocateStateName(root, location);
         //map
         mapFragment = SupportMapFragment.newInstance();
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -68,6 +107,7 @@ public class DashboardFragment extends Fragment {
         return root;
     }
 
+
     public void getCountryListData(final View view) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, countryDataUrl,
                 new Response.Listener<String>() {
@@ -85,6 +125,27 @@ public class DashboardFragment extends Fragment {
                         firstCountryListView = view.findViewById(R.id.first_list);
                         CountryListAdapter countryListAdapter = new CountryListAdapter(countryBeans, view.getContext());
                         firstCountryListView.setAdapter(countryListAdapter);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("error", "onErrorResponse: " + error.getLocalizedMessage());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    public void getLocateStateName(final View view, Location location) {
+        stateNameUrl += "lat=" + location.getLatitude() + "&lng=" + location.getLongitude();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, stateNameUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        String cityName = gson.fromJson(response, String.class);
+                        Log.i("city name: ", cityName);
+                        TextView textView = view.findViewById(R.id.current_location);
+                        textView.setText(cityName);
                     }
                 }, new Response.ErrorListener() {
             @Override
