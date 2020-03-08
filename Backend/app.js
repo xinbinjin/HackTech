@@ -3,17 +3,24 @@ var mongo = require('mongodb');
 const request = require("request");
 const csv = require('csvtojson');
 const bodyParser = require("body-parser");
-const CircularJSON = require('circular-json');
 const assert = require('assert');
 const app = express();
+const querystring = require("querystring");
+
+const GOOGLE_API_KEY = 'AIzaSyD3a9LPGJGo8aEE2_AS5FOPEtvb7ZD60PE';
+const EBAY_API_KEY = 'hacktech-COVIDASH-PRD-569eabc89-36681d5b';
 
 app.listen(8080, () => {
     console.log('Server started!');
     console.log('on port 8080');
 });
 
+
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
+
+// generate_geo_location()
+
 app.use(bodyParser.json());
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -110,27 +117,112 @@ app.get("/api/covid_data_by_state", (req, res, next) => {
     });
 });
 
-app.get("/api/autocomplete", (req, res, next) => {
-  const input = req.query.input;
-  const auto_complete_url =
-    "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" +
-    encodeURI(input) +
-    "&types=geocode&language=en&key=" +
-    GOOGLE_API_KEY;
-  request(auto_complete_url, function(error, response, body) {
-    var data = body;
-    data = JSON.parse(data);
-    var text_dic = new Array();
-    var predictions = data.predictions;
-    var length = 5;
-    if (predictions.length < 5) {
-      length = predictions.length;
-    }
-    for (i = 0; i < length; i++) {
-      var prediction = predictions[i];
-      var main_text = prediction.structured_formatting.main_text;
-      text_dic[i] = main_text;
-    }
-    res.json(text_dic);
-  });
+app.get("/api/autocomplete", function(req, res) {
+    var input = req.query.input;
+    var url =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" +
+        input +
+        "&types=(cities)&language=en&key=AIzaSyD3a9LPGJGo8aEE2_AS5FOPEtvb7ZD60PE";
+    request(url, function(error, responde, body) {
+        if (!error && responde.statusCode == 200) {
+            body = JSON.parse(body);
+            res.send(body);
+        }
+    });
 });
+
+app.get("/api/location_city", function(req, res) {
+    var city = req.query.city;
+    var url =
+        "https://maps.googleapis.com/maps/api/geocode/json?address=" +
+        city +
+        "&key=AIzaSyD3a9LPGJGo8aEE2_AS5FOPEtvb7ZD60PE";
+    request(url, function(error, responde, body) {
+        if (!error && responde.statusCode == 200) {
+            body = JSON.parse(body);
+            res.send(body);
+        }
+    });
+});
+
+app.get("/api/ebay_search_keyword", (req, res, next) => {
+    var query = req.query.keyword;
+    const ebay_query = ebay_search_query(query)
+    request(ebay_query, function(error, response, body) {
+        var data = body;
+        data = JSON.parse(data);
+        // console.log(data);
+        res.json(data);
+    });
+});
+
+app.get("/api/location2cityname", (req, res, next) => {
+    var lat = req.query.lat;
+    var lng = req.query.lng;
+    var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat
+    + "," + lng + "&language=EN&key=" + GOOGLE_API_KEY;
+    request(url, function(error, response, body) {
+        var data = body;
+        data = JSON.parse(data);
+        var length = data.results.length;
+        if ((length - 4) >= 0) {
+            var state = data.results[length-4].formatted_address;
+        } else {
+       	    var state = data.results[0].formatted_address;
+	}
+        var address = state;
+        res.json(address);
+    });
+});
+
+app.get('/api/nearest_location', (req, res, next) => {
+    var lat = parseInt(req.query.lat);
+    var lng = parseInt(req.query.lng);
+    MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        console.log("Connected correctly to server");
+        var dbo = db.db("mydb");
+        // insertDocuments('03-06-2020.csv', dbo, function () {
+        //      db.close();
+        // });
+        var collection = dbo.collection("covid_data");
+        // collection.updateMany({}, {$rename: {'Latitude': 'coords.lat', 'Longitude': 'coords.lon'}}, false, true)
+        collection.ensureIndex({"coords" : "2d"});
+        collection.find({
+            "coords": { "$near": [lat, lng] },
+            }).toArray(function(err, result) {
+                if (err) throw err;
+                res.json(result[0])
+                db.close();
+        });
+    });
+});
+
+function ebay_search_query(keyword) {
+    // Construct the request
+    // Replace MyAppID with your Production AppID
+    var url = "https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SERVICE-NAME=FindingService&SERVICE-VERSION=1.0.0&GLOBAL-ID=EBAY-US&SECURITY-APPNAME=" + EBAY_API_KEY + "&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&keywords=" + keyword;
+    return url
+}
+
+function generate_geo_location() {
+    MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        console.log("Connected correctly to server");
+        var dbo = db.db("mydb");
+        // insertDocuments('03-06-2020.csv', dbo, function () {
+        //      db.close();
+        // });
+        var collection = dbo.collection("covid_data")
+        collection.updateMany({}, {$rename: {'Latitude': 'coords.lat', 'Longitude': 'coords.lon'}}, false, true)
+        collection.createIndexes({"coords" : "2d"}, {"min":-1000, "max":1000});
+        collection.find({
+            "coords": { "$near": [41, 120] },
+            }).toArray(function(err, result) {
+                if (err) throw err;
+                // console.log(result);
+                console.log(result[0])
+                db.close();
+        });
+    });
+}
