@@ -17,9 +17,62 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/ebay_card"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="15dp"
+            android:clickable="true"
+            android:foreground="@drawable/custom_ripple"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="15dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_ebay_logo"
+                android:layout_gravity="center_horizontal"></ImageView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="All medical supplies are from eBay."
+                android:textColor="#FFF"
+                android:textSize="30sp"
+                android:paddingTop="15dp"
+                android:gravity="center"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:orientation="horizontal"
+                android:paddingTop="40dp"
+                android:paddingRight="5dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/information_outline" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingLeft="2dp"
+                    android:text="click to open eBay"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/goods_list_card"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="350dp"
             android:layout_marginBottom="15dp"
             android:clickable="true"
             android:foreground="@drawable/custom_ripple"

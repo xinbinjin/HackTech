@@ -90,6 +90,8 @@ public class DashboardFragment extends Fragment {
         if (location != null) {
             //不为空,显示地理位置经纬度
             Log.i("TAG","经度"+location.getLongitude()+"纬度"+location.getLatitude());
+        } else {
+            Log.i("Null Location:", locationProvider);
         }
         getLocateStateName(root, location);
         //map
