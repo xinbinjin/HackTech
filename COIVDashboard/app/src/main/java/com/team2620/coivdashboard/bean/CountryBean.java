@@ -1,6 +1,6 @@
 package com.team2620.coivdashboard.bean;
 
-public class CountryBean {
+public class CountryBean{
 
     /**
      * _id : Bahrain
