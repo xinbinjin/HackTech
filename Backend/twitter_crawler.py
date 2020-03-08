@@ -23,6 +23,7 @@ try:
     for tweet in ts.search_tweets_iterable(tso, callback=my_callback_closure):
         count += 1
         tweet_dict = {}
+        tweet_dict['id'] = tweet['id']
         tweet_dict['user'] = tweet['user']['screen_name']
         tweet_dict['text'] = tweet['text']
         tweet_dict['date'] = tweet['created_at']
@@ -31,7 +32,7 @@ try:
         if count == 10000:
             break
     los_angeles_result_json = json.dumps(los_angeles_results)
-    f = open("newyork_tweets.txt", "w")
+    f = open("los_angeles_tweets.txt", "w")
     f.write(los_angeles_result_json)
     f.close()
     print ("closed")
