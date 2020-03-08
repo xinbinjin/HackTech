@@ -64,6 +64,10 @@ public class TwitterFragment extends Fragment {
     private PieChart pieChart;
     private  WebView webView;
     private String emotionUrl = "http://35.236.4.22:8080/api/tweet_emotion_analysis?city=";
+    private LocationManager locationManager;
+    private String locationProvider;
+    private String stateNameUrl = "http://35.236.4.22:8080/api/location2cityname?";
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_twitter, container, false);
@@ -92,9 +96,33 @@ public class TwitterFragment extends Fragment {
         String content = "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">Amtrak suspends nonstop Acela service between DC and New York due to coronavirus <a href=\"https://t.co/KqHw25K2wm\">https://t.co/KqHw25K2wm</a></p>&mdash; CNBC (@CNBC) <a href=\"https://twitter.com/CNBC/status/1236329570783068161?ref_src=twsrc%5Etfw\">March 7, 2020</a></blockquote> <script async src=\"https://platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>";
         content += "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">Hi! You can help stop the spread of Coronavirus in New York City. 1- wash your hands. 2- avoid unnecessary travel and gatherings. 3- mind your neighbors. We can all get through this together- if we change our own behavior, we can save the lives of others and stop the spread.</p>&mdash; Justin Hendrix (@justinhendrix) <a href=\"https://twitter.com/justinhendrix/status/1236654295342297088?ref_src=twsrc%5Etfw\">March 8, 2020</a></blockquote> <script async src=\"https://platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>";
         addWebViewTwitter(content, webView);
-        getEmotionData(root, "los angeles");
+        getLocateStateName(root, location);
         return root;
     }
+
+    public void getLocateStateName(final View view, Location location) {
+        stateNameUrl += "lat=" + location.getLatitude() + "&lng=" + location.getLongitude();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, stateNameUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        String cityName = gson.fromJson(response, String.class);
+                        if (cityName.toLowerCase().contains("los angeles")){
+                            getEmotionData(view, "losangeles");
+                        } else {
+                            getEmotionData(view, "ny");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("error", "onErrorResponse: " + error.getLocalizedMessage());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
     public void getEmotionData(final View view, String location) {
         String url = "http://35.236.4.22:8080/api/tweet_emotion_analysis?city=";
         if (location.equalsIgnoreCase("los angeles")) {
