@@ -1,21 +1,30 @@
 package com.team2620.coivdashboard.ui.twitter;
 
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -46,13 +55,34 @@ public class TwitterFragment extends Fragment {
 
     private RequestQueue queue = null;
     private PieChart pieChart;
-    private String emotionUrl = "http://35.236.4.22:8080/api/tweet_emotion_analysis?city=";
+    private LocationManager locationManager;
+    private String locationProvider;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_twitter, container, false);
         queue = Volley.newRequestQueue(root.getContext());
         pieChart = root.findViewById(R.id.pie_chart);
+        locationManager = (LocationManager) root.getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(root.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(root.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            root.getContext().startActivity(intent);
+        }
+        List<String> providers = locationManager.getProviders(true);
+        if (providers.contains(LocationManager.GPS_PROVIDER)) {
+            //如果是GPS
+            locationProvider = LocationManager.GPS_PROVIDER;
+        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+            //如果是Network
+            locationProvider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Toast.makeText(root.getContext(), "No Location Service Found", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        //获取Location
+        final Location location = locationManager.getLastKnownLocation(locationProvider);
+
         getEmotionData(root, "los angeles");
         return root;
     }
